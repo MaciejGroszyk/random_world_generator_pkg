@@ -37,7 +37,6 @@ class GazeboRandomSpawnModel():
         WALL_VALUE = 255
         return all(p == WALL_VALUE for p in pose)
 
-
     def generateRandomPoseFromImg(self, iter_max: int = 50) -> tuple:
         """Generate random pose in range current img map"""
         height, width = self.getImageParams()

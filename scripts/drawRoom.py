@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
+from room import Room
 from roomParams import RoomParams
 import os
-import random
 
 class RoomDrawCreator():
     def __init__(self):
@@ -31,12 +31,6 @@ class DrawRoom():
 
     def drawWall(self):
         pass
-    
-    def drawRandomWall(self):
-        pass
-
-    def drawRandomWallWithDoor(self):
-        pass
 
     def drawDoor(self):
         pass
@@ -48,47 +42,23 @@ class DrawRoom():
     def getWallColor(self) -> tuple:
         wcv = self.img_params.WALL_COLOR_VALUE
         return (wcv, wcv, wcv)
-    
-    def getRandomValue(self, val) -> int:
-        return random.randint(0, val)
-
-    def getRandomWidthHeight(self) -> tuple:
-        w = self.getRandomValue(self.img_params.IMG_SIZE[0])
-        h = self.getRandomValue(self.img_params.IMG_SIZE[1])
-        return w, h
 
 class DrawRoomHorizontal(DrawRoom):
-    def drawWall(self, height):
-        w = self.img_params.IMG_SIZE[0]
-        self.draw.line((0, height, w, height), fill=self.getWallColor(), width= self.img_params.WALL_SIZE)
+    def drawWall(self, height, room : Room):
+        w_start = room.getPoint()[0]
+        w_end = room.getPoint()[0] + room.getWidth()
+        self.draw.line((w_start, height, w_end, height), fill=self.getWallColor(), width= self.img_params.WALL_SIZE)
 
-    def drawDoor(self, height, door_pose):
-        self.draw.line((door_pose, height, door_pose + self.img_params.DOOR_SIZE , height),
+    def drawDoor(self, width, height):
+        self.draw.line((width, height, width + self.img_params.DOOR_SIZE , height),
                         fill=self.getEmptyColor(), width= self.img_params.WALL_SIZE)
-
-    def drawRandomWall(self):
-        h = self.img_params.IMG_SIZE[1]
-        self.drawWall(self.getRandomValue(h))
-
-    def drawRandomWallWithDoor(self):
-        w, h = self.getRandomWidthHeight()
-        self.drawWall(h)
-        self.drawDoor(h, w)
 
 class DrawRoomVertical(DrawRoom):
-    def drawWall(self, width):
-        h =  self.img_params.IMG_SIZE[1]
-        self.draw.line((width, 0, width, h), fill=self.getWallColor(), width= self.img_params.WALL_SIZE)
+    def drawWall(self, width, room : Room):
+        h_start = room.getPoint()[1]
+        h_end =  room.getPoint()[1] +room.getHeight()
+        self.draw.line((width, h_start, width, h_end), fill=self.getWallColor(), width= self.img_params.WALL_SIZE)
 
-    def drawDoor(self, width, door_pose):
-        self.draw.line((width, door_pose, width, door_pose + self.img_params.DOOR_SIZE ),
+    def drawDoor(self, width, height):
+        self.draw.line((width,height, width, height + self.img_params.DOOR_SIZE ),
                         fill=self.getEmptyColor(), width= self.img_params.WALL_SIZE)
-
-    def drawRandomWall(self):
-        w = self.img_params.IMG_SIZE[0]
-        self.drawWall(self.getRandomValue(w))
-
-    def drawRandomWallWithDoor(self):
-        w, h = self.getRandomWidthHeight()
-        self.drawWall(w)
-        self.drawDoor(w, h)
