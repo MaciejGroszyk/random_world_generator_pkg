@@ -9,8 +9,6 @@ import random
 
 from distutils.dir_util import copy_tree
 
-
-
 class WorldMapModelGenerator():
 
     def __init__(self):
@@ -80,7 +78,7 @@ class WorldMapModelGenerator():
     
     def getNegatedImage(self, img):
         return cv2.bitwise_not(img)
- 
+
     def worldMapModelGenerator(self):
         random_img = self.readRandomImage()
         neg_random_img = self.getNegatedImage(random_img)
