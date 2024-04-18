@@ -104,6 +104,7 @@ if __name__ == "__main__":
     GRSM = GazeboRandomSpawnModel()
     # GRSM.spawnModelOnce()
     print(GRSM.getImageParams())
+
     # print(GRSM.generateRandomPoseFromImg())
     # print(GRSM.getRandomPose())
 

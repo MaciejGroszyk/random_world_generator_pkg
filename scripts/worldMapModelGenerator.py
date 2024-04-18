@@ -75,7 +75,6 @@ class WorldMapModelGenerator():
         cv2.imwrite(path, image)
         return path
 
-    
     def getNegatedImage(self, img):
         return cv2.bitwise_not(img)
 
@@ -86,6 +85,11 @@ class WorldMapModelGenerator():
 
         self.__generateMapModelStl(path_neg_random_img)
 
+    def worldFromPngModelGenerator(self, img):
+        neg_random_img = self.getNegatedImage(img)
+        path_neg_random_img = self.saveImage(neg_random_img)
+
+        self.__generateMapModelStl(path_neg_random_img)
 
     def sendGeneratedMapModelToGazeboModelPath(self):
         copy_folder_path = self.__package_path + self.LOCAL_MODEL_PATH
