@@ -6,8 +6,10 @@ import cv2
 import json
 import os
 import random
-
+import ctypes 
 from distutils.dir_util import copy_tree
+
+import json
 
 class WorldMapModelGenerator():
 
@@ -46,13 +48,31 @@ class WorldMapModelGenerator():
 
         iso=127.0
         mesh=mr.gridToMesh(volume, iso)
-
         stl_path = self.__package_path + self.LOCAL_MODEL_PATH
         mr.saveMesh(mesh, mr.Path(stl_path  + "/my_model.stl"))
+    
+        box3f = mesh.getBoundingBox()
+        self.saveStlParam(box3f.center())
+        return box3f.center().x*2, box3f.center().y*2
+
+
+    def saveStlParam(self, center):
+        dict = {
+            "width": center.y * 2,
+            "height": center.x * 2
+        }
+        json_object = json.dumps(dict, indent=2)
+        
+        with open(self.__package_path+self.LOCAL_MODEL_PATH+"/stl_size.json", "w") as outfile:
+            outfile.write(json_object)
 
     def getPseudoRandomMapFilePath(self) -> os.path:
         random_id = self.__getRandomMapFileId()
         formatted_id = "{:04d}".format(random_id)
+        return self.__package_path + self.PSEUDO_MAP_FOLDER + "/" + str(formatted_id) + ".png"
+
+    def getMapFilePath(self, id : int) -> os.path:
+        formatted_id = "{:04d}".format(id)
         return self.__package_path + self.PSEUDO_MAP_FOLDER + "/" + str(formatted_id) + ".png"
 
     def __getRandomIntFromRange(self, min: int, max : int) -> int:
@@ -70,6 +90,9 @@ class WorldMapModelGenerator():
     def readRandomImage(self):
         return cv2.imread(self.getPseudoRandomMapFilePath())
 
+    def readImageId(self, id:int):
+        return cv2.imread(self.getMapFilePath(id))
+
     def saveImage(self, image):
         path = self.getPackagePath() + self.CURRENT_MODEL_PNG
         cv2.imwrite(path, image)
@@ -83,7 +106,21 @@ class WorldMapModelGenerator():
         neg_random_img = self.getNegatedImage(random_img)
         path_neg_random_img = self.saveImage(neg_random_img)
 
-        self.__generateMapModelStl(path_neg_random_img)
+        w, h = self.__generateMapModelStl(path_neg_random_img)
+        
+        resized = cv2.resize(neg_random_img, (int(w), int(h)))
+        self.saveImage(resized)
+
+    
+    def worldMapModelGeneratorId(self, id :int):
+        img = self.readImageId(id)
+        neg_img = self.getNegatedImage(img)
+        path_img = self.saveImage(neg_img)
+
+        w, h = self.__generateMapModelStl(path_img)
+
+        resized = cv2.resize(neg_img, (int(w), int(h)))
+        self.saveImage(resized)
 
     def worldFromPngModelGenerator(self, img):
         neg_random_img = self.getNegatedImage(img)
@@ -105,5 +142,6 @@ if __name__ == "__main__":
     print(wmmg.getPackagePath())
     print(wmmg.getPseudoRandomMapFilePath())
 
-    wmmg.worldMapModelGenerator()
+    # wmmg.worldMapModelGenerator()
+    wmmg.worldMapModelGeneratorId(5)
     wmmg.sendGeneratedMapModelToGazeboModelPath()

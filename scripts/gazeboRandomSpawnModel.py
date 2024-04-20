@@ -55,12 +55,19 @@ class GazeboRandomSpawnModel():
     def getRandomPose(self) -> str:
         """Get random pose in img range"""
         new_h, new_w = self.generateRandomPoseFromImg()
-        SCALE = 200
+        SCALE = 100/0.83
         return f"<pose> {new_w/SCALE:.1f} {new_h/SCALE:.1f} 0 0 0</pose>"
 
     def spawnModelOnce(self):
         """Spawn model once"""
         xml = self.generateXmlSphere()
+        self.requestSpawn(xml)
+
+    def spawnCorners(self):
+        width=  311.5*2
+        height =  244.5 * 2
+        SCALE = 100
+        xml = self.generateXmlSphereWithPose(f"<pose> {width/SCALE:.1f} {height/SCALE:.1f} 0 0 0</pose>")
         self.requestSpawn(xml)
 
     def spawnModelWithPeriod(self, period_sec: float = 2.0, count: int = 10):
@@ -109,8 +116,8 @@ if __name__ == "__main__":
     # print(GRSM.getRandomPose())
 
     # GRSM.spawnModelWithPeriod(count=2)
-    GRSM.spawnMap()
-    # GRSM.spawnCorners()
+    # GRSM.spawnMap()
+    GRSM.spawnCorners()
 
 # if len(sys.argv) < 2:
 #     print('usage: ros2 run my_package my_node.py -- example.urdf')
